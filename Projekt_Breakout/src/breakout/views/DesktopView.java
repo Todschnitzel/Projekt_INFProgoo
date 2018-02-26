@@ -1,8 +1,10 @@
+package breakout.views;
 
 import acm.graphics.GRect;
 import acm.program.GraphicsProgram;
+import breakout.models.Model;
 
-public class View extends GraphicsProgram {
+public class DesktopView extends GraphicsProgram {
 	
 	public void drawBall() {
 		double x = Model.ballPositionX();
