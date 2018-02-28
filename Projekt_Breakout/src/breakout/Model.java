@@ -61,4 +61,11 @@ public class Model {
 	public double getY() {
 		return Y;
 	}
+
+	public void paddleKollision() {
+
+		by = -by;
+		moveBall();
+		
+	}
 }
