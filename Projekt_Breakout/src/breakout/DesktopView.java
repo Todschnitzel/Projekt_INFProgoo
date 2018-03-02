@@ -1,5 +1,6 @@
 package breakout;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
@@ -16,7 +17,6 @@ public class DesktopView extends GraphicsProgram {
 	/* Objekte des Spiels */
 	private GObject ball;
 	private GRect paddle;
-	private GObject kollision;
 
 	/* Modell */
 	private Model model;
@@ -24,7 +24,12 @@ public class DesktopView extends GraphicsProgram {
 	private static final int PADDLE_WIDTH = 60;
 	private static final int PADDLE_HEIGHT = 10;
 	private static final int PADDLE_Y_OFFSET = 30;
+
 	private static final int BALL_RADIUS = 10;
+
+	private static final double BRICK_WIDTH = 40;
+	private static final double BRICK_HEIGHT = 10;
+	private static final double SEPERATION = 5;
 
 	/**
 	 * Zeichnet einen Ball.
@@ -48,8 +53,19 @@ public class DesktopView extends GraphicsProgram {
 		double y = getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
 		paddle = new GRect(x, y, PADDLE_WIDTH, PADDLE_HEIGHT);
 		paddle.setFilled(true);
+		paddle.setColor(Color.GREEN);
 		add(paddle);
 		addMouseListeners();
+	}
+
+	public void drawBricks(double[][] level) {
+
+		for (int i = 0; i < level.length; i++) {
+			GRect brick = new GRect(level[i][0], level[i][1], BRICK_WIDTH, BRICK_HEIGHT);
+			println(level[i][0] + " " + level[i][1]);
+			brick.setFilled(true);
+			add(brick);
+		}
 	}
 
 	/*------------------- CONTROLLER------------------ */
@@ -59,6 +75,7 @@ public class DesktopView extends GraphicsProgram {
 		model = new Model(APPLICATION_WIDTH, APPLICATION_HEIGTH, BALL_RADIUS);
 		setupGame();
 	}
+
 	/**
 	 * Startet das Spiel und lässt und spielen.
 	 */
@@ -66,11 +83,15 @@ public class DesktopView extends GraphicsProgram {
 		waitForClick();
 		while (true) {
 			model.moveBall();
-			kollision = getCollidingObject();
-			if (kollision == paddle) {
-				// if(model.getY() >= APPLICATION_HEIGTH - PADDLE_Y_OFFSET - PADDLE_HEIGHT -
-				// BALL_RADIUS*2 && model.getY() < APPLICATION_HEIGTH - PADDLE_Y_OFFSET -
-				// PADDLE_HEIGHT - BALL_RADIUS*2 + 4)
+			GObject	kollision = getCollidingObject();
+			if(kollision == ball ) {
+				kollision = null; }
+			println(kollision);
+			println(ball);
+			if (kollision == paddle && kollision != ball) {
+				model.paddleKollision();
+			} else if (kollision != null && kollision != ball) {
+				remove(kollision);
 				model.paddleKollision();
 			}
 
@@ -80,31 +101,34 @@ public class DesktopView extends GraphicsProgram {
 			}
 			pause(10);
 		}
-		//restartScreen();
+		// restartScreen();
 	}
+
 	/**
 	 * Erschafft das Level.
 	 */
 	private void setupGame() {
-		
+		drawBricks(model.levelOne(BRICK_WIDTH, BRICK_HEIGHT, SEPERATION));
 		drawBall();
 		drawPaddle();
 		playGame();
 	}
-	
+
 	/**
 	 * Gibt uns Buttons um das Spiel neuzustarten (WIP).
 	 */
 	private void restartScreen() {
 		model = new Model(APPLICATION_WIDTH, APPLICATION_HEIGTH, BALL_RADIUS);
-		add(new JButton("Restart"), APPLICATION_HEIGTH / 2, APPLICATION_WIDTH /2 );
-		//add(new JButton("EXIT"), CENTER);
+		add(new JButton("Restart"), APPLICATION_HEIGTH / 2, APPLICATION_WIDTH / 2);
+		// add(new JButton("EXIT"), CENTER);
 		addActionListeners();
 	}
-	
+
 	/**
 	 * Überprüft ob eine Kollision vorliegt.
-	 * @return Gibt das kollidierende Objekt zurück, null wenn keine Kollision vorliegt.
+	 * 
+	 * @return Gibt das kollidierende Objekt zurück, null wenn keine Kollision
+	 *         vorliegt.
 	 */
 	private GObject getCollidingObject() {
 
@@ -132,15 +156,14 @@ public class DesktopView extends GraphicsProgram {
 			paddle.setLocation(e.getX() - PADDLE_WIDTH / 2, getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT);
 		}
 	}
-	
-	public void actionPerformed(ActionEvent a) { 
-		if (a.getActionCommand().equals("Restart")) { 
-			setupGame();
-			}
+
+	public void actionPerformed(ActionEvent a) {
+		if (a.getActionCommand().equals("Restart")) {
+			run();
+		}
 		if (a.getActionCommand().equals("Exit")) {
 			exit();
 		}
 	}
-
 
 }
