@@ -7,6 +7,7 @@ public class Model {
 	private static int WIDTH;
 	private static int HEIGTH;
 	private static int BALL_RADIUS;
+	private static int BRICK_SCORE ;
 
 
 	// Random Generator
@@ -66,7 +67,13 @@ public class Model {
 	public void paddleKollision() {
 
 		by = -by;
+		moveBall();
 
+	}
+	
+	public double getScore() {
+		double score = BRICK_SCORE;
+		return score;
 	}
 
 	/**
@@ -115,7 +122,7 @@ public class Model {
 			}
 			counter++;
 		}
-		
+		BRICK_SCORE = pos.length * 10;
 		return pos;
 	}
 }

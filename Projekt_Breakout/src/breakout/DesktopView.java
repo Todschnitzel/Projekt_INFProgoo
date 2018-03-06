@@ -3,9 +3,11 @@ package breakout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Array;
 
 import javax.swing.JButton;
 
+import acm.graphics.GLabel;
 import acm.graphics.GObject;
 import acm.graphics.GRect;
 import acm.program.GraphicsProgram;
@@ -31,6 +33,7 @@ public class DesktopView extends GraphicsProgram {
 	private static final double BRICK_WIDTH = 40;
 	private static final double BRICK_HEIGHT = 10;
 	private static final double SEPERATION = 5;
+	private static int ACTUAL_SCORE = 0;
 	private RandomGenerator rgen = new RandomGenerator();
 
 	/**
@@ -55,6 +58,7 @@ public class DesktopView extends GraphicsProgram {
 		double y = getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
 		paddle = new GRect(x, y, PADDLE_WIDTH, PADDLE_HEIGHT);
 		paddle.setFilled(true);
+		paddle.setColor(Color.GREEN);
 		add(paddle);
 		addMouseListeners();
 	}
@@ -85,22 +89,26 @@ public class DesktopView extends GraphicsProgram {
 	private void playGame() {
 		waitForClick();
 		while (true) {
+
 			GObject kollision = getCollidingObject();
 			if (kollision == ball) {
 				kollision = null;
 			}
 			println(kollision);
-			// println(ball);
+			println(ball);
 			if (kollision == paddle) {
 				model.paddleKollision();
 
 			} else if (kollision != null) {
 				remove(kollision);
 				model.paddleKollision();
+				ACTUAL_SCORE += 10;
+
 			}
 			model.moveBall();
 			ball.setLocation(model.getX(), model.getY());
-			if (ball.getY() > APPLICATION_HEIGTH) {
+			if (ball.getY() > APPLICATION_HEIGTH || ACTUAL_SCORE == model.getScore()) {
+				add(new GLabel("Your score is " + ACTUAL_SCORE, 10, 10));
 				break;
 			}
 			pause(10);
@@ -116,6 +124,7 @@ public class DesktopView extends GraphicsProgram {
 		drawBall();
 		drawPaddle();
 		playGame();
+
 	}
 
 	/**
@@ -136,22 +145,20 @@ public class DesktopView extends GraphicsProgram {
 	 */
 	private GObject getCollidingObject() {
 		// Oben links
-		if ((getElementAt(model.getX(), model.getY() - BALL_RADIUS /2)) != null) {
-			return getElementAt(model.getX(), model.getY() - BALL_RADIUS /2);
+		if ((getElementAt(model.getX(), model.getY() - BALL_RADIUS / 2)) != null) {
+			return getElementAt(model.getX(), model.getY() - BALL_RADIUS / 2);
 			// Oben rechts * 2
-		} else if (getElementAt((model.getX() + BALL_RADIUS), model.getY() - BALL_RADIUS /2) != null) {
-			return getElementAt(model.getX() + BALL_RADIUS, model.getY() - BALL_RADIUS /2);
+		} else if (getElementAt((model.getX() + BALL_RADIUS), model.getY() - BALL_RADIUS / 2) != null) {
+			return getElementAt(model.getX() + BALL_RADIUS, model.getY() - BALL_RADIUS / 2);
 			// Unten links * 2
-		} else if (getElementAt(model.getX(), (model.getY() + BALL_RADIUS *2)) != null) {
-			return getElementAt(model.getX(), model.getY() + BALL_RADIUS *2);
+		} else if (getElementAt(model.getX(), (model.getY() + BALL_RADIUS * 2)) != null) {
+			return getElementAt(model.getX(), model.getY() + BALL_RADIUS * 2);
 			// Unten rechts * 2
-		} else if (getElementAt((model.getX() + BALL_RADIUS ), (model.getY() + BALL_RADIUS * 2)) != null) {
-			return getElementAt(model.getX() + BALL_RADIUS , model.getY() + BALL_RADIUS *2 );
-		}
-		else {
+		} else if (getElementAt((model.getX() + BALL_RADIUS), (model.getY() + BALL_RADIUS * 2)) != null) {
+			return getElementAt(model.getX() + BALL_RADIUS, model.getY() + BALL_RADIUS * 2);
+		} else {
 			return null;
 		}
-
 	}
 
 	/*-----Steuerung-----*/
