@@ -66,6 +66,7 @@ public class Model {
 	public void paddleKollision() {
 
 		by = -by;
+		moveBall();
 
 	}
 
