@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import acm.graphics.GObject;
 import acm.graphics.GRect;
 import acm.program.GraphicsProgram;
+import acm.util.RandomGenerator;
 
 public class DesktopView extends GraphicsProgram {
 	/* Fenstergröße */
@@ -30,6 +31,7 @@ public class DesktopView extends GraphicsProgram {
 	private static final double BRICK_WIDTH = 40;
 	private static final double BRICK_HEIGHT = 10;
 	private static final double SEPERATION = 5;
+	private RandomGenerator rgen = new RandomGenerator();
 
 	/**
 	 * Zeichnet einen Ball.
@@ -53,7 +55,6 @@ public class DesktopView extends GraphicsProgram {
 		double y = getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
 		paddle = new GRect(x, y, PADDLE_WIDTH, PADDLE_HEIGHT);
 		paddle.setFilled(true);
-		paddle.setColor(Color.GREEN);
 		add(paddle);
 		addMouseListeners();
 	}
@@ -62,8 +63,10 @@ public class DesktopView extends GraphicsProgram {
 
 		for (int i = 0; i < level.length; i++) {
 			GRect brick = new GRect(level[i][0], level[i][1] + 30, BRICK_WIDTH, BRICK_HEIGHT);
-			println(level[i][0] + " " + level[i][1]);
 			brick.setFilled(true);
+			Color rdm = rgen.nextColor();
+			brick.setFillColor(rdm);
+			brick.setColor(rdm);
 			add(brick);
 		}
 	}
@@ -82,16 +85,15 @@ public class DesktopView extends GraphicsProgram {
 	private void playGame() {
 		waitForClick();
 		while (true) {
-			
 			GObject kollision = getCollidingObject();
 			if (kollision == ball) {
 				kollision = null;
 			}
 			println(kollision);
-			println(ball);
+			// println(ball);
 			if (kollision == paddle) {
-					model.paddleKollision();
-				
+				model.paddleKollision();
+
 			} else if (kollision != null) {
 				remove(kollision);
 				model.paddleKollision();
@@ -133,24 +135,22 @@ public class DesktopView extends GraphicsProgram {
 	 *         vorliegt.
 	 */
 	private GObject getCollidingObject() {
-		//Oben links
-		if ((getElementAt(model.getX(), model.getY())) != null) {
-			return getElementAt(model.getX(), model.getY());
-		//Oben rechts * 2
-		} else if (getElementAt((model.getX() + BALL_RADIUS ), model.getY()) != null) {
-			return getElementAt(model.getX() + BALL_RADIUS , model.getY());
-		//Unten links * 2
-		} else if (getElementAt(model.getX(), (model.getY() + BALL_RADIUS )) != null) {
-			return getElementAt(model.getX(), model.getY() + BALL_RADIUS );
-		//Unten rechts * 2
-		} else if (getElementAt((model.getX() + BALL_RADIUS ), (model.getY() + BALL_RADIUS )) != null) {
-			return getElementAt(model.getX() + BALL_RADIUS , model.getY() + BALL_RADIUS );
+		// Oben links
+		if ((getElementAt(model.getX(), model.getY() - BALL_RADIUS /2)) != null) {
+			return getElementAt(model.getX(), model.getY() - BALL_RADIUS /2);
+			// Oben rechts * 2
+		} else if (getElementAt((model.getX() + BALL_RADIUS), model.getY() - BALL_RADIUS /2) != null) {
+			return getElementAt(model.getX() + BALL_RADIUS, model.getY() - BALL_RADIUS /2);
+			// Unten links * 2
+		} else if (getElementAt(model.getX(), (model.getY() + BALL_RADIUS *2)) != null) {
+			return getElementAt(model.getX(), model.getY() + BALL_RADIUS *2);
+			// Unten rechts * 2
+		} else if (getElementAt((model.getX() + BALL_RADIUS ), (model.getY() + BALL_RADIUS * 2)) != null) {
+			return getElementAt(model.getX() + BALL_RADIUS , model.getY() + BALL_RADIUS *2 );
 		}
-		// need to return null if there are no objects present
 		else {
 			return null;
 		}
-		// need to return null if there are no objects
 
 	}
 
